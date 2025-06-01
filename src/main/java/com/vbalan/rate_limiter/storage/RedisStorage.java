@@ -29,6 +29,11 @@ public class RedisStorage implements RateLimitStorage {
   }
 
   @Override
+  public String getString(String key) {
+    return redisTemplate.opsForValue().get(key);
+  }
+
+  @Override
   public void delete(String key) {
     redisTemplate.delete(key);
   }

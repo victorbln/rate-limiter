@@ -49,6 +49,15 @@ public class InMemoryStorage implements RateLimitStorage {
     expirations.remove(key);
   }
 
+  @Override
+  public String getString(String key) {
+    if (isExpired(key)) {
+      delete(key);
+      return null;
+    }
+    return storage.get(key);
+  }
+
   private boolean isExpired(String key) {
     LocalDateTime expiration = expirations.get(key);
     return expiration != null && LocalDateTime.now().isAfter(expiration);
