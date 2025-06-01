@@ -1,6 +1,7 @@
 package com.vbalan.rate_limiter.service;
 
 import com.vbalan.rate_limiter.config.ClientConfig;
+import com.vbalan.rate_limiter.model.ClientConfiguration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +19,9 @@ public class AuthenticationService {
 
   public boolean isValidClient(String clientId) {
     return clientId != null && clientConfig.getClients().containsKey(clientId);
+  }
+
+  public ClientConfiguration getClientConfiguration(String clientId) {
+    return clientConfig.getClients().get(clientId);
   }
 }
