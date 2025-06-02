@@ -6,6 +6,12 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-defaultpassword123}
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-defaultpassword123}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
     container_name: rate-limiter-redis
     networks:
@@ -16,7 +22,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8081:8080" 1
+      - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=redis
       - SPRING_DATA_REDIS_HOST=redis
