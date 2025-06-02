@@ -1,0 +1,42 @@
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-defaultpassword123}
+    restart: unless-stopped
+    container_name: rate-limiter-redis
+    networks:
+      - redis-network
+
+  rate-limiter-redis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080" 1
+    environment:
+      - SPRING_PROFILES_ACTIVE=redis
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD:-defaultpassword123}
+      - JAVA_OPTS=-Xmx1g -Xms512m -XX:+UseG1GC -XX:+UseContainerSupport
+      - SERVER_PORT=8080
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    container_name: rate-limiter-redis-app
+    networks:
+      - redis-network
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  redis-network:
+    name: rate-limiter-redis-network
+    driver: bridge
