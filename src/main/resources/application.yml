@@ -21,10 +21,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
-  info:
-    title: Rate Limiting API
-    description: API demonstrating rate limiting with different algorithms
-    version: 1.0.0
 
 ---
 spring:

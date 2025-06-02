@@ -4,6 +4,7 @@ import com.vbalan.rate_limiter.model.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -23,5 +24,11 @@ public class GlobalExceptionHandler {
     log.error("Storage initialization exception", ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(new ErrorResponse("Unexpected error"));
+  }
+
+  @ExceptionHandler(MissingRequestHeaderException.class)
+  public ResponseEntity<String> handleMissingHeader(MissingRequestHeaderException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body("No Authorization header provided");
   }
 }

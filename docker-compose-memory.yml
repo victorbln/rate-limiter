@@ -1,0 +1,15 @@
+services:
+  rate-limiter-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=memory
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    restart: unless-stopped
+
+networks:
+  default:
+    name: rate-limiter-network
