@@ -117,7 +117,11 @@ class ApiControllerTest {
     mockMvc
         .perform(get("/foo").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
-        .andExpect(content().string("No Authorization header provided"));
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Unauthorized"))
+        .andExpect(jsonPath("$.message").value("Authorization header is required"))
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.path").value("/foo"));
 
     verify(authenticationService, never()).extractClientId(any());
     verify(authenticationService, never()).isValidClient(any());
@@ -208,7 +212,11 @@ class ApiControllerTest {
     mockMvc
         .perform(get("/bar").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
-        .andExpect(content().string("No Authorization header provided"));
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Unauthorized"))
+        .andExpect(jsonPath("$.message").value("Authorization header is required"))
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.path").value("/bar"));
 
     verify(authenticationService, never()).extractClientId(any());
     verify(authenticationService, never()).isValidClient(any());

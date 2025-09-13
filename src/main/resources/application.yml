@@ -1,8 +1,42 @@
 server:
   port: 8080
+  shutdown: graceful
+
 spring:
   profiles:
     active: memory
+  application:
+    name: rate-limiter
+    description: Professional Rate Limiter Service
+    version: @project.version@
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    info:
+      enabled: true
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+    redis:
+      enabled: true
+  info:
+    build:
+      enabled: true
+    git:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
 
 rate-limit:
   clients:
@@ -21,6 +55,38 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
+    tryItOutEnabled: true
+    displayRequestDuration: true
+    defaultModelsExpandDepth: 1
+    defaultModelExpandDepth: 1
+  info:
+    title: Rate Limiter API
+    description: |
+      A professional rate limiter service implementing Token Bucket and Sliding Window algorithms.
+      
+      This API provides rate-limited endpoints that demonstrate different rate limiting strategies:
+      - **Token Bucket**: Allows burst requests up to bucket capacity, then refills at steady rate
+      - **Sliding Window**: Tracks individual request timestamps for precise rate limiting
+      
+      Both algorithms support configurable client-specific limits and can use either in-memory or Redis storage.
+    version: @project.version@
+    contact:
+      name: Victor Balan
+      email: victorbalan9@gmail.com
+      url: https://github.com/victorbln
+    license:
+      name: MIT License
+      url: https://opensource.org/licenses/MIT
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger{36}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger{36}] - %msg%n"
+  level:
+    com.vbalan.rate_limiter: INFO
+    org.springframework.security: INFO
+    org.springframework.web: INFO
+    root: INFO
 
 ---
 spring:
@@ -32,7 +98,52 @@ spring:
       host: localhost
       port: 6379
       timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
 
 rate-limit:
   storage:
     type: redis
+
+logging:
+  level:
+    com.vbalan.rate_limiter.storage.RedisStorage: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: development
+      
+logging:
+  level:
+    com.vbalan.rate_limiter: DEBUG
+    org.springframework.web: DEBUG
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+      
+logging:
+  level:
+    com.vbalan.rate_limiter: WARN
+    org.springframework.web: WARN
+    root: WARN
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus

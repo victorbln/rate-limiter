@@ -1,24 +1,45 @@
-# Rate Limiter Application
+# Professional Rate Limiter Service
 
-A Spring Boot application demonstrating two different rate limiting algorithms: Token Bucket and Sliding Window. The
-application supports both in-memory and Redis-based storage and provides REST APIs with documentation via Swagger UI.
-I've chosen to provide a docker file that takes on the building and running the application so that you don't need to
-install java and maven on your local machine. For a ci/cd the approach will be to run the image build by the pipeline
-runners with as few layers as possible for image size optimization and startup
+[![Java](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=openjdk)](https://openjdk.org/projects/jdk/17/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen?style=flat-square&logo=spring)](https://spring.io/projects/spring-boot)
+[![Maven](https://img.shields.io/badge/Maven-3.9+-blue?style=flat-square&logo=apache-maven)](https://maven.apache.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue?style=flat-square&logo=docker)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/badge/Build-Passing-success?style=flat-square)](https://github.com/victorbln/rate-limiter)
 
-## Features
+> A professional-grade, production-ready rate limiting service built with Spring Boot, demonstrating multiple algorithms and storage backends with comprehensive monitoring and documentation.
 
-- **Two Rate Limiting Algorithms**:
-    - **Token Bucket**: Allows burst requests up to bucket capacity, then refills at steady rate
-    - **Sliding Window**: Tracks individual request timestamps for precise rate limiting over sliding time window
+## 🚀 Features
 
-- **Dual Storage Support**:
-    - **Memory**: In-memory storage with automatic cleanup (default)
-    - **Redis**: Distributed storage
+### 🏗️ **Two Rate Limiting Algorithms**
+- **Token Bucket**: Allows burst requests up to bucket capacity, then refills at steady rate
+- **Sliding Window**: Tracks individual request timestamps for precise rate limiting over sliding time window
 
-- **Client-Based Configuration**: Different rate limits per client
-- **API Documentation**: Interactive Swagger UI
-- **Docker Support**: Containerized deployment with Docker Compose
+### 💾 **Dual Storage Support**
+- **Memory**: In-memory storage with automatic cleanup (perfect for development)
+- **Redis**: Distributed storage for production deployments
+
+### 🔧 **Production-Ready Features**
+- ✅ **Client-Based Configuration**: Different rate limits per client
+- ✅ **Comprehensive API Documentation**: Interactive Swagger UI with detailed examples
+- ✅ **Monitoring & Observability**: Actuator endpoints, Prometheus metrics
+- ✅ **Professional Error Handling**: Structured error responses with detailed information
+- ✅ **Docker Support**: Optimized containerized deployment with health checks
+- ✅ **Multiple Profiles**: Development, production, and custom configurations
+- ✅ **Code Quality**: Integrated static analysis and test coverage
+
+## 📋 Table of Contents
+
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Documentation](#api-documentation)
+- [Configuration](#configuration)
+- [Monitoring](#monitoring)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Prerequisites
 
@@ -33,38 +54,36 @@ runners with as few layers as possible for image size optimization and startup
 - Maven 3.9+
 - Redis Server (optional, for Redis profile)
 
-## Quick Start
+## ⚡ Quick Start
 
-### Using Docker Compose
-
-#### Memory Storage (Standalone)
+Get the Rate Limiter service running in under 2 minutes:
 
 ```bash
-# Build and run with in-memory storage
+# Option 1: Using Docker (Recommended)
+git clone https://github.com/victorbln/rate-limiter.git
+cd rate-limiter
 docker compose -f docker-compose-memory.yml up --build -d
 
-# Check logs
-docker compose -f docker-compose-memory.yml logs -f
+# Option 2: Using Maven (requires Java 17+)
+git clone https://github.com/victorbln/rate-limiter.git
+cd rate-limiter
+mvn spring-boot:run
 ```
 
-#### Redis Storage
+🎉 **That's it!** Your rate limiter is now running at:
+- **API**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **Health Check**: http://localhost:8080/actuator/health
+- **Metrics**: http://localhost:8080/actuator/prometheus
+
+### 🧪 Test the API
 
 ```bash
-# Build and run with Redis storage
-docker compose -f docker-compose-redis.yml up --build -d
+# Test Token Bucket algorithm (allows burst)
+curl -H "Authorization: Bearer client-1" http://localhost:8080/foo
 
-# Check logs
-docker compose -f docker-compose-redis.yml logs -f
-```
-
-#### Stopping the Application
-
-```bash
-# Stop memory version
-docker compose -f docker-compose-memory.yml down
-
-# Stop Redis version (with volume cleanup)
-docker compose -f docker-compose-redis.yml down -v
+# Test Sliding Window algorithm (strict limiting)
+curl -H "Authorization: Bearer client-2" http://localhost:8080/bar
 ```
 
 ### Using IntelliJ IDEA
